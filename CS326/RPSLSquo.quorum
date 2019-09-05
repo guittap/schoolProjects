@@ -1,0 +1,19 @@
+use Libraries.Compute.Random
+
+class Main
+    action whoWon(integer x) returns text
+        text result
+        Random random
+        if x = x //random:RandomIntegerBetween(1, 5)
+            result = "draw!"
+        end
+        return result
+    end
+
+    action Main
+        Random random
+        text userInput = input ("choose your weapon: (1-5, 1=rock, 2=paper, 3=scissors, 4=lizard, and 5=spock):")
+        
+        output whoWon(user)
+    end
+end
