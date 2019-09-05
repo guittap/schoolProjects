@@ -13,7 +13,7 @@ class Main
     action Main
         Random random
         text userInput = input ("choose your weapon: (1-5, 1=rock, 2=paper, 3=scissors, 4=lizard, and 5=spock):")
-        
+        integer user = 
         output whoWon(user)
     end
 end
