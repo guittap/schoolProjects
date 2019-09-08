@@ -1,19 +1,121 @@
 use Libraries.Compute.Random
+use Libraries.Language.Errors.Error
 
 class Main
-    action whoWon(integer x) returns text
-        text result
-        Random random
-        if x = x //random:RandomIntegerBetween(1, 5)
+    action whoWon(integer x, integer y) returns text
+        text result = ""
+        if x = y
             result = "draw!"
+        end
+
+        if x = 1
+            if y = 2
+                result = "Paper covers rock. You lose."
+            end
+
+            if y = 3
+                result = "Rock crushes scissors. You win."
+            end
+
+            if y = 4
+                result = "Rock crushes lizard. You win."
+            end
+
+            if y = 5
+                result = "Spock vaporizes rock. You lose."
+            end
+        end
+
+        if x = 2
+            if y = 1
+                result = "Paper covers rock. You win."
+            end
+
+            if y = 3
+                result = "Scissors cut paper. You lose."
+            end
+
+            if y = 4
+                result = "Lizard eats paper. You lose."
+            end
+
+            if y = 5
+                result = "Paper disproves Spock. You win."
+            end
+        end
+
+        if x = 3
+            if y = 1
+                result = "Rock crushes scissors. You lose."
+            end
+
+            if y = 2
+                result = "Scissors cut paper. You win."
+            end
+
+            if y = 4
+                result = "Scissors decapitate lizard. You win."
+            end
+
+            if y = 5
+                result = "Spock smashes scissors. You lose."
+            end
+        end
+
+        if x = 4
+            if y = 1
+                result = "Rock crushes lizard. You lose."
+            end
+
+            if y = 2
+                result = "Lizard eats paper. You win."
+            end
+
+            if y = 3
+                result = "Scissors decapitate lizard. You lose."
+            end
+
+            if y = 5
+                result = "Lizard poisons Spock. You win."
+            end
+        end
+
+        if x = 5
+            if y = 1
+                result = "Spock vaporizes rock. You win."
+            end
+
+            if y = 2
+                result = "Paper disproves Spock. You lose."
+            end
+
+            if y = 3
+                result = "Spock smashes scissors. You win."
+            end
+
+            if y = 4
+                result = "Lizard poisons Spock. You lose."
+            end
         end
         return result
     end
 
     action Main
         Random random
-        text userInput = input ("choose your weapon: (1-5, 1=rock, 2=paper, 3=scissors, 4=lizard, and 5=spock):")
-        integer user = 
-        output whoWon(user)
+        integer user = 0
+
+        repeat until user > 0 and user < 6
+            check
+                text userInput = input ("choose your weapon: (1-5, 1=rock, 2=paper, 3=scissors, 4=lizard, and 5=spock):")
+                user = cast(integer, userInput)
+            detect e is Error
+                user = 0
+            end
+        end
+
+        integer botResponse = random:RandomIntegerBetween(1, 5)
+        output ("bot chose " + botResponse)
+
+        output whoWon(user, botResponse)
     end
 end
