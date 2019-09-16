@@ -3,7 +3,8 @@ use Libraries.Language.Errors.Error
 use Libraries.Containers.Array
 
 class Main
-    action GetData (Array<integer> myList, integer listSize) returns integer
+    action GetData (Array<integer> myList)
+        integer listSize = 0
         repeat until listSize > 0
             check
                 text listInput = input ("choose list > 0:")
@@ -19,23 +20,53 @@ class Main
             myList:Add(random:RandomIntegerBetween(0, 10000))
             i = i + 1
         end
-
-        return listSize
     end
 
-    action DisplayNums (Array<integer> myList, integer listSize)
+    action DisplayNums (Array<integer> myList)
         integer i = 0
-        repeat while i < listSize
+        repeat while i < myList:GetSize()
             output myList:Get(i)
             i = i + 1
         end
     end
 
+    action QuickSort (Array<integer> myList, integer lo, integer hi)
+        integer i=lo
+        integer j=hi
+        integer h=0
+        integer x=myList:Get((lo+hi)/2)
+
+        repeat while i<=j
+            repeat while myList:Get(i) < x
+                i = i + 1
+            end
+            repeat while myList:Get(j) > x
+                j = j - 1
+            end
+            if i<=j
+                h = myList:Get(i)
+                myList:Set(i,myList:Get(j))
+                myList:Set(j,h)
+                i = i + 1
+                j = j - 1
+            end
+        end
+
+        if lo<j
+            QuickSort(myList, lo, j)
+        end
+
+        if i<hi
+            QuickSort(myList, i, hi)
+        end
+    end
+
     action Main
-        integer listSize = 0
         Array<integer> myList
 
-        listSize = GetData (myList, listSize)
-        DisplayNums (myList, listSize)
+        GetData (myList)
+        DisplayNums (myList)
+        QuickSort (myList, 0, myList:GetSize() - 1)
+        DisplayNums (myList)
     end
 end
