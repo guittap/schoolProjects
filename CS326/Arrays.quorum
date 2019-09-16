@@ -1,0 +1,39 @@
+use Libraries.Compute.Random
+use Libraries.Language.Errors.Error
+use Libraries.Containers.Array
+
+class Main
+    action GetData (Array<integer> myList, integer listSize)
+        integer i = 0
+        Random random
+        repeat while i < listSize
+            myList:Add(random:RandomIntegerBetween(0, 10000))
+            i = i + 1
+        end
+    end
+
+    action DisplayNums (Array<integer> myList, integer listSize)
+        integer i = 0
+        repeat while i < listSize
+            output myList:Get(i)
+            i = i + 1
+        end
+    end
+
+    action Main
+        integer listSize = 0
+        Array<integer> myList
+
+        repeat until listSize > 0
+            check
+                text listInput = input ("choose list > 0:")
+                listSize = cast(integer, listInput)
+            detect e is Error
+                listSize = 0
+            end
+        end
+
+        GetData (myList, listSize)
+        DisplayNums (myList, listSize)
+    end
+end
