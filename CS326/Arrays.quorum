@@ -1,6 +1,8 @@
 use Libraries.Compute.Random
 use Libraries.Language.Errors.Error
 use Libraries.Containers.Array
+use Libraries.Compute.Math
+
 
 class Main
     action GetData (Array<integer> myList)
@@ -69,19 +71,51 @@ class Main
         end
     end
 
-    action Stats
+    action Stats (Array<integer> myList, Array<number> myStats)
+        integer i = 0
+        number temp = 0
+        Math math
+
+        repeat while i < myList:GetSize()
+            myStats:Set(0, myStats:Get(0) + myList:Get(i))
+            i = i + 1
+        end
+        myStats:Set(0, myStats:Get(0) / myList:GetSize())
+
+        i = 0
+        repeat while i < myList:GetSize()
+            temp = myList:Get(i) - myStats:Get(0)
+            temp = temp * temp
+            myStats:Set(1, myStats:Get(1) + temp)
+            i = i + 1
+        end
+        myStats:Set(1, myStats:Get(1) / (myList:GetSize() - 1))
+
+        myStats:Set(2, math:SquareRoot(myStats:Get(1)))
+    end
+
+    action DataDisplay (Array<integer> myList, Array<number> myStats)
+        output ("List of sorted numbers")
+        DisplayNums (myList, 10)
+        output ("")
+        output ("average: " + myStats:Get(0))
+        output ("variance: " + myStats:Get(1))
+        output ("standard deviation: " + myStats:Get(2))
     end
 
     action Main
         Array<integer> myList
+        Array<number> myStats
+        myStats:Add(0) //average
+        myStats:Add(0) //variance
+        myStats:Add(0) //standard deviation
 
         GetData (myList)
         output ("List of unsorted numbers")
         DisplayNums (myList, 10)
         output ("")
         QuickSort (myList, 0, myList:GetSize() - 1)
-        output ("List of sorted numbers")
-        DisplayNums (myList, 10)
-        output ("")
+        Stats (myList, myStats)
+        DataDisplay (myList, myStats)
     end
 end
