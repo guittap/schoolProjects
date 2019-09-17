@@ -5,9 +5,12 @@ use Libraries.Compute.Math
 
 
 class Main
+    constant integer MIN = 10
+    constant integer MAX = 1000000
+
     action GetData (Array<integer> myList)
         integer listSize = 0
-        repeat until listSize > 0
+        repeat until listSize >= MIN and listSize <= MAX
             check
                 text listInput = input ("choose list > 0:")
                 listSize = cast(integer, listInput)
