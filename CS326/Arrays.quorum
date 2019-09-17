@@ -22,11 +22,19 @@ class Main
         end
     end
 
-    action DisplayNums (Array<integer> myList)
+    action DisplayNums (Array<integer> myList, integer perRow)
         integer i = 0
+        text rowOfNumbers = ""
         repeat while i < myList:GetSize()
-            output myList:Get(i)
+            if i mod perRow = 0
+                output rowOfNumbers
+                rowOfNumbers = ""
+            end
+            rowOfNumbers = rowOfNumbers + cast(text, myList:Get(i)) + "     "
             i = i + 1
+        end
+        if rowOfNumbers not= ""
+            output rowOfNumbers
         end
     end
 
@@ -61,12 +69,19 @@ class Main
         end
     end
 
+    action Stats
+    end
+
     action Main
         Array<integer> myList
 
         GetData (myList)
-        DisplayNums (myList)
+        output ("List of unsorted numbers")
+        DisplayNums (myList, 10)
+        output ("")
         QuickSort (myList, 0, myList:GetSize() - 1)
-        DisplayNums (myList)
+        output ("List of sorted numbers")
+        DisplayNums (myList, 10)
+        output ("")
     end
 end
