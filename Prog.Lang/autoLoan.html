@@ -4,13 +4,219 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand&display=swap">
     <title>Car Loan Calculator</title>
 
-    <script type="text/javascript">
+    <!-- styles -->
+    <style>
+        * {
+            margin-left: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif !important;
+        }
+        .header {
+            font-size: 2rem !important;
+            text-align: center;
+        }
+        .loanBox {
+            padding-top: 1.5rem;
+            font-size: 1rem;
+            border: 0.0625rem solid gray;
+            background-color: rgb(243, 243, 243);
+        }
+        .elPaddDown {
+            padding-bottom: .75rem;
+        }
+        .elPaddDown2 {
+            padding-bottom: .50rem;
+        }
+        .elPaddUp {
+            padding-top: 1rem;
+        }
+        input[type="button"] {
+            padding: 0.25rem 0.5rem;
+            border: 0.0625rem solid gray;
+            border-radius: 0.25rem;
+            font-size: .75rem;
+            transition: 0.5s;
+        }
+        input[type="button"]:hover {
+            border-color: black;
+        }       
+        input[type="number"] {
+            padding: 0.25rem 0.5rem;
+            border: 0.0625rem solid gray;
+            border-radius: 0.25rem;
+            font-size: .75rem;
+            transition: 0.5s;
+        }
+        input[type="number"]:hover {
+            border-color: black;
+        } 
+        .paymentSched {
+            background-color: white;
+            border-top: 0.0625rem solid gray;
+        }
+        .textCol {
+            text-align: right;
+        }
+        .centerCol {
+            text-align: center;
+        }
+        .paymentText {
+            text-align: center;
+            font-size: .85rem;
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
+    <!-- scripts -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        function autoLoanSubmit() {
+            let amount = document.getElementById('carCost');
+            let dpay = document.getElementById('downPay');
+            let irate = document.getElementById('annInterRate');
+            let term = document.getElementById('term');
+            resetPaySched();
+
+            if (inputCleansing(amount.value, dpay.value, irate.value, term.value)) {
+                let irateConvert = irate.value * .01 / 12;
+                let result = 0
+                if (irateConvert > 0) {
+                    result = (amount.value - dpay.value) * ((irateConvert*Math.pow(1+irateConvert, term.value*12))/ (Math.pow(1+irateConvert, term.value*12)-1.0));
+                }
+                else {
+                    result = (amount.value - dpay.value) / (term.value*12);
+                }
+
+                let monthlyPay = document.getElementById('monthlyPay');
+                monthlyPay.innerHTML = '$' + numberWithCommas(Math.round(result * 100) / 100);
+
+                let totalPay = document.getElementById('totalPay');
+                totalPay.innerHTML = '$' + numberWithCommas(Math.round((result * term.value * 12) * 100) / 100);
+
+                let runningAmount = amount.value - dpay.value;
+                let monthlyinterest = 0;
+                let principle = 0;
+                for (let i = 1; i <= (term.value*12); i++) {
+                    monthlyinterest = runningAmount * irateConvert;
+                    principle = result - monthlyinterest;
+                    runningAmount -= principle;
+                    document.getElementById('month').innerHTML += numberWithCommas(i) + '<br>';
+                    document.getElementById('interest').innerHTML += numberWithCommas(Math.round(monthlyinterest * 100) / 100) + '<br>';
+                    document.getElementById('principal').innerHTML += numberWithCommas(Math.round(principle * 100) / 100) + '<br>';
+                    document.getElementById('balance').innerHTML += numberWithCommas(Math.round(runningAmount * 100) / 100) + '<br>';
+                }
+            }
+        }
+        function resetForm() {
+            document.getElementById('carCost').value = "";
+            document.getElementById('downPay').value = "";
+            document.getElementById('annInterRate').value = "";
+            document.getElementById('term').value = "";
+            document.getElementById('monthlyPay').innerHTML = "$";
+            document.getElementById('totalPay').innerHTML = "$";
+        }
+        function resetPaySched() {
+            document.getElementById('month').innerHTML = "";
+            document.getElementById('interest').innerHTML = "";
+            document.getElementById('principal').innerHTML = "";
+            document.getElementById('balance').innerHTML = "";
+        }
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        function inputCleansing(amount, dpay, irate, term){
+            if (amount <= 500000 && amount > 0 && dpay >= 0 && parseInt(dpay) <= parseInt(amount) && irate >= 0 && irate <= 15 && term > 0 && term <= 6) {
+                return true;
+            }
+            else {
+                alert("Error. The loan amount does not appear to be valid. Please try again.");
+                resetForm();
+                resetPaySched();
+            }
+            return false;
+        }
     </script>
 </head>
 <body>
-    <div></div>
+    <header class = 'header'>
+        <p>CS 326 JavaScript Car Loan Calculator</p>
+        <p>Wargen Guittap</p>
+    </header>
+    <div class = 'loanBox container'>
+        <div class = 'row'>
+            <div class = 'col-md-3 col-s-0'></div>
+            <div class = 'col-md-3 col-s-6 textCol'>
+                <p class='elPaddDown'>Car Cost Amount: </p>
+                <p class='elPaddDown'>Down Payment: </p>
+                <p class='elPaddDown'>Annual Interest Rate: </p>
+                <p class='elPaddDown'>Term (in years) (1-6): </p>
+            </div>
+            <div class = 'col-md-3 col-s-6'>
+                <p class='elPaddDown2'><span class='unitMeasure'>$</span> <input type="number" id="carCost"></p>
+                <p class='elPaddDown2'><span class='unitMeasure'>$</span> <input type="number" id="downPay"></p>
+                <p class='elPaddDown2'><input type="number" id="annInterRate"> <span class='unitMeasure'>%</span></p>
+                <p class='elPaddDown2'><input type="number" id="term"></p>
+            </div>
+            <div class = 'col-md-3 col-s-0'></div>
+        </div>
+        <div class = 'row'>
+            <div class = 'col centerCol'>
+                <input type="button" value="Press to calculate auto loan information" id="autoLoan" onclick="autoLoanSubmit();"/>
+                <input type="button" value="Reset Form" id="resetForm" onclick="resetForm();"/>
+            </div>
+        </div>
+        <div class = 'row'> 
+            <div class = 'col-md-3'></div>
+            <div class = 'col-md-3 textCol'>
+                <p class='elPaddDown elPaddUp'>Monthly Payment: </p>
+                <p class='elPaddDown'>Total Payment: </p>
+            </div>
+            <div class = 'col-md-3'>
+                <p class='elPaddDown elPaddUp' id='monthlyPay'>$ </p>
+                <p class='elPaddDown' id='totalPay'>$ </p>
+            </div>
+            <div class = 'col-md-3'></div>
+        </div>
+        <div class = 'row paymentSched'>
+            <div class = 'col centerCol'>
+                <br><p class = 'header'>Payment Schedule</p>
+            </div>
+        </div>
+        <div class = 'row' style = 'background-color: white;'>
+            <div class = 'col-md-2'></div>
+            <div class = 'col-md-8'>
+                <div class = 'row centerCol'>
+                    <div class = 'col-md-2'></div>
+                    <div class = 'col-md-2'>
+                        <p>Month</p>
+                        <p>----------</p>
+                        <p id = 'month' class = 'paymentText'></p>
+                    </div>
+                    <div class = 'col-md-2'>
+                        <p>Interest</p>
+                        <p>----------</p>
+                        <p id = 'interest' class = 'paymentText'></p>
+                    </div>
+                    <div class = 'col-md-2'>
+                        <p>Principal</p>
+                        <p>----------</p>
+                        <p id = 'principal' class = 'paymentText'></p>
+                    </div>
+                    <div class = 'col-md-2'>
+                        <p>Balance</p>
+                        <p>----------</p>
+                        <p id = 'balance' class = 'paymentText'></p>
+                    </div>
+                    <div class = 'col-md-2'></div>
+                </div>
+            </div>
+            <div class = 'col-md-2'></div>
+        </div>
+    </div>
 </body>
 </html>
