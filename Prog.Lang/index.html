@@ -132,6 +132,10 @@
             document.getElementById('principal').innerHTML = "";
             document.getElementById('balance').innerHTML = "";
         }
+        function resetButton(){
+            resetForm();
+            resetPaySched();
+        }
         function numberWithCommas(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
@@ -174,7 +178,7 @@
         <div class = 'row'>
             <div class = 'col centerCol'>
                 <input type="button" value="Press to calculate auto loan information" id="autoLoan" onclick="autoLoanSubmit();"/>
-                <input type="button" value="Reset Form" id="resetForm" onclick="resetForm();"/>
+                <input type="button" value="Reset Form" id="resetForm" onclick="resetButton();"/>
             </div>
         </div>
 
