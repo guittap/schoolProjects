@@ -82,9 +82,12 @@
             let term = document.getElementById('term');
             resetPaySched();
 
+            // does input cleansing before doing stuff
             if (inputCleansing(amount.value, dpay.value, irate.value, term.value)) {
                 let irateConvert = irate.value * .01 / 12;
                 let result = 0
+
+                // this checks for if the rate is > 0 because formula will break in that case
                 if (irateConvert > 0) {
                     result = (amount.value - dpay.value) * ((irateConvert*Math.pow(1+irateConvert, term.value*12))/ (Math.pow(1+irateConvert, term.value*12)-1.0));
                 }
@@ -92,12 +95,15 @@
                     result = (amount.value - dpay.value) / (term.value*12);
                 }
 
+                //solving for monthly payment
                 let monthlyPay = document.getElementById('monthlyPay');
                 monthlyPay.innerHTML = '$' + numberWithCommas(Math.round(result * 100) / 100);
 
+                //solving for what the total pay would be
                 let totalPay = document.getElementById('totalPay');
                 totalPay.innerHTML = '$' + numberWithCommas(Math.round((result * term.value * 12) * 100) / 100);
 
+                //loop for finding the payment schedule
                 let runningAmount = amount.value - dpay.value;
                 let monthlyinterest = 0;
                 let principle = 0;
@@ -112,7 +118,7 @@
                 }
             }
         }
-        function resetForm() {
+        function resetForm() { //reset button
             document.getElementById('carCost').value = "";
             document.getElementById('downPay').value = "";
             document.getElementById('annInterRate').value = "";
@@ -120,7 +126,7 @@
             document.getElementById('monthlyPay').innerHTML = "$";
             document.getElementById('totalPay').innerHTML = "$";
         }
-        function resetPaySched() {
+        function resetPaySched() { //resetting payment schedule
             document.getElementById('month').innerHTML = "";
             document.getElementById('interest').innerHTML = "";
             document.getElementById('principal').innerHTML = "";
@@ -148,6 +154,7 @@
         <p>Wargen Guittap</p>
     </header>
     <div class = 'loanBox container'>
+        <!-- this row is for all of the user input stuff -->
         <div class = 'row'>
             <div class = 'col-md-3 col-s-0'></div>
             <div class = 'col-md-3 col-s-6 textCol'>
@@ -170,6 +177,8 @@
                 <input type="button" value="Reset Form" id="resetForm" onclick="resetForm();"/>
             </div>
         </div>
+
+        <!-- this row if for the monthly and total payment stuff -->
         <div class = 'row'> 
             <div class = 'col-md-3'></div>
             <div class = 'col-md-3 textCol'>
@@ -182,6 +191,8 @@
             </div>
             <div class = 'col-md-3'></div>
         </div>
+
+        <!-- the next few rows are for finding the payment schedule -->
         <div class = 'row paymentSched'>
             <div class = 'col centerCol'>
                 <br><p class = 'header'>Payment Schedule</p>
