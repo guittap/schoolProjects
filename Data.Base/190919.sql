@@ -1,3 +1,7 @@
+show databases;
+use guittap;
+create table zipcode source projct.sql
+
 create table zipcode (
     -> zip int(5) not null,
     -> city varchar(30) default null,
