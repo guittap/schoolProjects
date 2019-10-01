@@ -63,11 +63,14 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script type = 'text/javascript'>
         let mole;
+        let bang;
         let hits = 0;
         let moleX = 0;
         let moleY = 0;
         let moleW = 100;
         let moleH = 100;
+        let bangW = 123;
+        let bangH = 102;
         let canvasW = window.innerWidth/1.5;
         let canvasH = window.innerHeight/1.5;
         let speed = 750;
@@ -88,6 +91,7 @@
             let cnv = createCanvas(canvasW, canvasH);
             cnv.parent("gameDiv");
             mole = loadImage('mole.png');
+            bang = loadImage('bang.png');
         }
 
         function timer() {
@@ -107,8 +111,10 @@
         function mousePressed() {
             let distBetweenMouse = dist(mouseX, mouseY, moleX + (moleW / 2), moleY + (moleH / 2));
             if (distBetweenMouse < moleW / 2) {
-                updateMole();
                 hitCount();
+                milliInitial = 0;
+                explosion();
+                updateMole();
                 milliInitial = milliCurrent;
                 document.getElementById('currPos').innerHTML = 'Current Position: X: ' + Math.round(moleX) + ' Y: ' + Math.round(moleY);
             }
@@ -133,6 +139,10 @@
         function stopButton() {
             reset();
             isStart = 'false';
+        }
+
+        function explosion() {
+            image(bang, moleX, moleY, bangW, bangH);
         }
 
         function startButton() {
