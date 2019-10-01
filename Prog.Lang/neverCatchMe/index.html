@@ -95,6 +95,7 @@
             if (milliCurrent - milliInitial >= speed && isStart == 'true') {
                 milliInitial = milliCurrent;
                 updateMole();
+                document.getElementById('currPos').innerHTML = 'Current Position: X: ' + Math.round(moleX) + ' Y: ' + Math.round(moleY);
             }
         }
 
