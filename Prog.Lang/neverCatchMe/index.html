@@ -1,3 +1,4 @@
+<!-- Wargen Guittap Project #5 CS 326 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,13 +65,19 @@
     <script type = 'text/javascript'>
         let mole;
         let bang;
+        let hammer;
+        let gold;
         let hits = 0;
         let moleX = 0;
         let moleY = 0;
         let moleW = 100;
         let moleH = 100;
-        let bangW = 123;
-        let bangH = 102;
+        let bangX = 0;
+        let bangY = 0;
+        let bangW = 100;
+        let bangH = 75;
+        let hammerW = 75;
+        let hammerH = 65;
         let canvasW = window.innerWidth/1.5;
         let canvasH = window.innerHeight/1.5;
         let speed = 750;
@@ -78,22 +85,33 @@
         let milliCurrent = milliInitial;
         let milliInterval = setInterval(timer, 1);
         let isStart = 'false';
+        let wasClicked = 'false';
+        let isGold = 'false';
 
+        //function that will reset variables
         function reset() {
             hits = 0;
             moleX = 0;
             moleY = 0;
+            isGold = 'false';
+            wasClicked = 'false';
+            isStart = 'false';
             document.getElementById('hitNumber').innerHTML = 'Hits: ' + hits;
             document.getElementById('currPos').innerHTML = 'Current Position: X: ' + Math.round(moleX) + ' Y: ' + Math.round(moleY);
         }
 
+        //initial setup
         function setup() {
             let cnv = createCanvas(canvasW, canvasH);
             cnv.parent("gameDiv");
             mole = loadImage('mole.png');
             bang = loadImage('bang.png');
+            hammer = loadImage('hammer.png');
+            gold = loadImage('gold.png');
+            noCursor();
         }
-
+        
+        //timer function for the jump
         function timer() {
             milliCurrent = Date.now();
             if (milliCurrent - milliInitial >= speed && isStart == 'true') {
@@ -103,18 +121,31 @@
             }
         }
 
+        //function that will loop every frame 
         function draw() {
             background('lightgray');
-            image(mole, moleX, moleY, moleW, moleH);
+            if (wasClicked == 'true') {
+                image(bang, bangX, bangY, bangW, bangH);
+            }
+            if (isGold == 'true') {
+                image(gold, moleX, moleY, moleW, moleH);
+            }
+            else {
+                image(mole, moleX, moleY, moleW, moleH);
+            }
+            image(hammer, mouseX-25, mouseY-25, hammerW, hammerH);
         }
 
+        //function that will do stuff when mouse is pressed
         function mousePressed() {
             let distBetweenMouse = dist(mouseX, mouseY, moleX + (moleW / 2), moleY + (moleH / 2));
             if (distBetweenMouse < moleW / 2) {
                 hitCount();
                 milliInitial = 0;
-                explosion();
+                bangX = moleX;
+                bangY = moleY;
                 updateMole();
+                wasClicked = 'true';
                 milliInitial = milliCurrent;
                 document.getElementById('currPos').innerHTML = 'Current Position: X: ' + Math.round(moleX) + ' Y: ' + Math.round(moleY);
             }
@@ -123,6 +154,12 @@
         function updateMole() {
             moleX = random(0, canvasW-moleW);
             moleY = random(0, canvasH-moleH);
+            wasClicked = 'false';
+            isGold = 'false';
+            let goldRandom = int(random(1, 5));
+            if (goldRandom == 3) {
+                isGold = 'true';
+            }
         }
 
         function windowResized() {
@@ -133,6 +170,9 @@
 
         function hitCount() {
             hits += 1;
+            if (isGold == 'true') {
+                hits += 2;
+            }
             document.getElementById('hitNumber').innerHTML = 'Hits: ' + hits;
         }
 
@@ -141,12 +181,9 @@
             isStart = 'false';
         }
 
-        function explosion() {
-            image(bang, moleX, moleY, bangW, bangH);
-        }
-
         function startButton() {
             speed = document.getElementById('speed').value;
+            isStart = 'false';
             if (inputCleansing(speed)) {
                 reset();
                 isStart = 'true';
