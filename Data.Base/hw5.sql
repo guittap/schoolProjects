@@ -31,14 +31,14 @@ and p.price > 50.00;
 -- Empty set
 
 --3. get the pairs of customer number values of customers having the same zipcode.
-select c1.cno, c2.cno
+select c1.cno as cno1, c2.cno as cno2
 from Customers c1, Customers c2
 where c1.zip = c2.zip
 and c1.cno < c2.cno;
 
 -- output
 -- +------+------+
--- | cno  | cno  |
+-- | cno1 | cno2 |
 -- +------+------+
 -- | 1111 | 2222 |
 -- +------+------+
@@ -93,7 +93,7 @@ where not exists
 -- Empty set
 
 --7. get the names of employees along with the total sales for 1995.
-select ename , sum(od.qty*price) 
+select ename , sum(od.qty*price) as totalSales
 from  Employees e, Orders o, Odetails od, Parts p 
 where e.eno = o.eno 
 and o.ono = od.ono 
@@ -102,12 +102,12 @@ and o.shipped like '1995%'
 group by e.ename;
 
 --output
--- +-------+-------------------+
--- | ename | sum(od.qty*price) |
--- +-------+-------------------+
--- | Jones |             99.96 |
--- | Smith |             44.98 |
--- +-------+-------------------+
+-- +-------+------------+
+-- | ename | totalSales |
+-- +-------+------------+
+-- | Jones |      99.96 |
+-- | Smith |      44.98 |
+-- +-------+------------+
 
 --8. get the numbers and names of employees who have never made a sale to a customer living in the same zipcode as the employee.
 select e1.eno, e1.ename
@@ -136,11 +136,11 @@ order by orderCount desc
 limit 1;
 
 -- output
--- +---------+-----------------+
--- | cname   | max(orderCount) |
--- +---------+-----------------+
--- | Charles |               2 |
--- +---------+-----------------+
+-- +---------+------------+
+-- | cname   | orderCount |
+-- +---------+------------+
+-- | Charles |          2 |
+-- +---------+------------+
 
 --10. get the names of customers who have placed the most expensive orders.
 select c1.cname, sum(od.qty*price) as mostExpensive
@@ -175,39 +175,37 @@ limit 1;
 -- +-----------------+----------+
 
 --12. get the names of parts along with the number of orders they appear in sorted order of the number of orders.
-select p.pname, count(o.ono) as oc
+select p.pname, count(o.ono) as numOfOrderAppear
 from Parts p, Orders o, Odetails od
 where o.ono = od.ono 
 and p.pno = od.pno
 group by od.pno, p.pname
-order by oc desc;
+order by numOfOrderAppear desc;
 
 -- output
--- +----------------------+----+
--- | pname                | oc |
--- +----------------------+----+
--- | Sleeping Beauty      |  2 |
--- | Land Before Time IV  |  1 |
--- | When Harry Met Sally |  1 |
--- | Land Before Time I   |  1 |
--- | Dirty Harry          |  1 |
--- | Land Before Time II  |  1 |
--- | Dr. Zhivago          |  1 |
--- | Land Before Time III |  1 |
--- +----------------------+----+
+-- +----------------------+------------------+
+-- | pname                | numOfOrderAppear |
+-- +----------------------+------------------+
+-- | Sleeping Beauty      |                2 |
+-- | When Harry Met Sally |                1 |
+-- | Land Before Time I   |                1 |
+-- | Dirty Harry          |                1 |
+-- | Land Before Time II  |                1 |
+-- | Dr. Zhivago          |                1 |
+-- | Land Before Time III |                1 |
+-- | Land Before Time IV  |                1 |
+-- +----------------------+------------------+
 
 --13. get the average waiting time for all orders in number of days. The waiting time for an order is defined as the difference
 --    between the shipped date and the recieved date. Note: The dates should be trncated to 12:00 AM so that the difference is always
 --    a whole number of days.
-
-select datediff(shipped, received) as waitTime from Orders order by ono;
+select avg(waitTime) as averageWaitTime 
+from (select datediff(shipped, received) as waitTime 
+    from Orders order by ono) as waitRow;
 
 -- output
--- +----------+
--- | waitTime |
--- +----------+
--- |        2 |
--- |        3 |
--- |        7 |
--- |     NULL |
--- +----------+
+-- +-----------------+
+-- | averageWaitTime |
+-- +-----------------+
+-- |          4.0000 |
+-- +-----------------+
