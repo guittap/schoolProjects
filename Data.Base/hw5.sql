@@ -195,3 +195,19 @@ order by oc desc;
 -- | Dr. Zhivago          |  1 |
 -- | Land Before Time III |  1 |
 -- +----------------------+----+
+
+--13. get the average waiting time for all orders in number of days. The waiting time for an order is defined as the difference
+--    between the shipped date and the recieved date. Note: The dates should be trncated to 12:00 AM so that the difference is always
+--    a whole number of days.
+
+select datediff(shipped, received) as waitTime from Orders order by ono;
+
+-- output
+-- +----------+
+-- | waitTime |
+-- +----------+
+-- |        2 |
+-- |        3 |
+-- |        7 |
+-- |     NULL |
+-- +----------+
