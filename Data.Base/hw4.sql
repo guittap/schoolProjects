@@ -107,15 +107,15 @@ values
     (61111, 'Fort Hays');
 
 --alter statements
-alter table Employees add foreign key (ZIP) references Zipcodes(ZIP);
-alter table Parts add foreign key (PNO) references Odetails(PNO);
-alter table Customers add foreign key (CNO) references Orders(CNO);
-alter table Customers add foreign key (ZIP) references Zipcodes(ZIP);
-alter table Orders add foreign key (ONO) references Odetails(ONO);
-alter table Orders add foreign key (CNO) references Customers(CNO);
-alter table Orders add foreign key (ENO) references Employees(ENO);
-alter table Odetails add foreign key(ONO) references Orders(ONO);
-alter table Odetails add foreign key(PNO) references Parts(PNO);
+-- alter table Employees add foreign key (ZIP) references Zipcodes(ZIP);
+-- alter table Parts add foreign key (PNO) references Odetails(PNO);
+-- alter table Customers add foreign key (CNO) references Orders(CNO);
+-- alter table Customers add foreign key (ZIP) references Zipcodes(ZIP);
+-- alter table Orders add foreign key (ONO) references Odetails(ONO);
+-- alter table Orders add foreign key (CNO) references Customers(CNO);
+-- alter table Orders add foreign key (ENO) references Employees(ENO);
+-- alter table Odetails add foreign key(ONO) references Orders(ONO);
+-- alter table Odetails add foreign key(PNO) references Parts(PNO);
 
 --select statements
 select ENO, ENAME, ZIP, date_format(HDATE, '%d-%b-%y') from Employees;
