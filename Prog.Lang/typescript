@@ -1,0 +1,43 @@
+Script started on Tue Oct 22 11:15:47 2019
+[?1034hbash-3.2$ ruby prob[Kj06.rb
+
+Scrabble Score Calculator
+
+Enter word to score: 2cr3azy
+Score for '2cr3azy' is: 42
+
+Enter word to score: Scrabble
+Score for 'Scrabble' is: 14
+
+Enter word to score: 2scRab3ble
+Score for '2scRab3ble' is: 40
+
+Enter word to score: cs326
+Error found bad multiplier after.
+
+Enter word to score: per3l
+Score for 'per3l' is: 8
+
+Enter word to score: Computer Science
+Error found bad character ' '.
+
+Enter word to score: per4l
+Error found bad multiplier after.
+
+Enter word to score: 2Com3p2uter
+Score for '2Com3p2uter' is: 46
+
+Enter word to score: 6perl
+Error found bad multiplier after.
+
+Enter word to score: 3ed2
+Score for '3ed2' is: 15
+
+Enter word to score: 
+
+Bye!
+
+bash-3.2$ exit
+exit
+
+Script done on Tue Oct 22 11:18:01 2019
