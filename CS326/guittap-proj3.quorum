@@ -1,0 +1,124 @@
+use Libraries.Compute.Random
+use Libraries.Language.Errors.Error
+use Libraries.Containers.Array
+use Libraries.Compute.Math
+
+
+class Main
+    constant integer MIN = 10
+    constant integer MAX = 1000000
+
+    action GetData (Array<integer> myList)
+        integer listSize = 0
+        repeat until listSize >= MIN and listSize <= MAX
+            check
+                text listInput = input ("choose list > 0:")
+                listSize = cast(integer, listInput)
+            detect e is Error
+                listSize = 0
+            end
+        end
+
+        integer i = 0
+        Random random
+        repeat while i < listSize
+            myList:Add(random:RandomIntegerBetween(0, 10000))
+            i = i + 1
+        end
+    end
+
+    action DisplayNums (Array<integer> myList, integer perRow)
+        integer i = 0
+        text rowOfNumbers = ""
+        repeat while i < myList:GetSize()
+            if i mod perRow = 0
+                output rowOfNumbers
+                rowOfNumbers = ""
+            end
+            rowOfNumbers = rowOfNumbers + cast(text, myList:Get(i)) + "     "
+            i = i + 1
+        end
+        if rowOfNumbers not= ""
+            output rowOfNumbers
+        end
+    end
+
+    action QuickSort (Array<integer> myList, integer lo, integer hi)
+        integer i=lo
+        integer j=hi
+        integer h=0
+        integer x=myList:Get((lo+hi)/2)
+
+        repeat while i<=j
+            repeat while myList:Get(i) < x
+                i = i + 1
+            end
+            repeat while myList:Get(j) > x
+                j = j - 1
+            end
+            if i<=j
+                h = myList:Get(i)
+                myList:Set(i,myList:Get(j))
+                myList:Set(j,h)
+                i = i + 1
+                j = j - 1
+            end
+        end
+
+        if lo<j
+            QuickSort(myList, lo, j)
+        end
+
+        if i<hi
+            QuickSort(myList, i, hi)
+        end
+    end
+
+    action Stats (Array<integer> myList, Array<number> myStats)
+        integer i = 0
+        number temp = 0
+        Math math
+
+        repeat while i < myList:GetSize()
+            myStats:Set(0, myStats:Get(0) + myList:Get(i))
+            i = i + 1
+        end
+        myStats:Set(0, myStats:Get(0) / myList:GetSize())
+
+        i = 0
+        repeat while i < myList:GetSize()
+            temp = myList:Get(i) - myStats:Get(0)
+            temp = temp * temp
+            myStats:Set(1, myStats:Get(1) + temp)
+            i = i + 1
+        end
+        myStats:Set(1, myStats:Get(1) / (myList:GetSize() - 1))
+
+        myStats:Set(2, math:SquareRoot(myStats:Get(1)))
+    end
+
+    action DataDisplay (Array<integer> myList, Array<number> myStats)
+        output ("List of sorted numbers")
+        DisplayNums (myList, 10)
+        output ("")
+        output ("average: " + myStats:Get(0))
+        output ("variance: " + myStats:Get(1))
+        output ("standard deviation: " + myStats:Get(2))
+    end
+
+    action Main
+        Array<integer> myList
+        Array<number> myStats
+        myStats:Add(0) //average
+        myStats:Add(0) //variance
+        myStats:Add(0) //standard deviation
+
+        GetData (myList)
+        output ("List of unsorted numbers")
+        DisplayNums (myList, 10)
+        output ("")
+        QuickSort (myList, 0, myList:GetSize() - 1)
+        Stats (myList, myStats)
+        DataDisplay (myList, myStats)
+    end
+end
