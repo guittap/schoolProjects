@@ -22,18 +22,51 @@ possible = data[6][2..data[6].size]
 scores = data[7..data.size]
 scores = scores.sort
 
+def calculateArverage (scores)
+    while $i < scores[$i].size
+        $trueSize = scores.size
+        $sum = 0
+        $j = 0
+        while $j < scores.size
+            if scores[$j][$i].to_i == 0 #this is for finding true size when the score is = 0 
+                $trueSize -= 1          #this will only work if a student getting a complete 0 does not count towards average
+            end
+            $sum += scores[$j][$i].to_i
+            $j += 1
+        end
+        $avg = $sum.to_f / $trueSize #this will calculate the average of the class
+        puts "            <th>#{$avg.round(1)}</th>"
+        $i += 1
+    end
+end
+
+def calculatePossible(asNum, scores, possible)
+    $i = 0
+    $asPossible = 0
+    $testPossible = 0
+    while $i < asNum.to_i
+        $asPossible += possible[$i].to_i
+        $i += 1
+    end
+    while $i < scores[$i].size
+        $testPossible += possible[$i].to_i
+        $i += 1
+    end
+    return $asPossible, $testPossible
+end
+
+def headersOutput(data)
+    while $i < data[7].size    #this simply goes through the data array and outputs the headers
+        if ARGV[0] == '-ids' && $i == 1 
+            $i += 1
+        end
+        puts "            <th>" + data[5][$i] + "</th>"
+        $i += 1
+    end
+end
+
 #the possble calculations use later for finding estimated grade
-$asPossible = 0 
-$testPossible = 0
-$i = 0
-while $i < asNum.to_i
-    $asPossible += possible[$i].to_i
-    $i += 1
-end
-while $i < scores[$i].size
-    $testPossible += possible[$i].to_i
-    $i += 1
-end
+$asPossible, $testPossible = calculatePossible(asNum, scores, possible)
 
 #initializing html document
 puts "<!DOCTYPE html>"
@@ -59,13 +92,7 @@ puts "    <h2>As of: " + Time.now.strftime("%A, %B %d, %Y") + "</h2>"
 puts "    <table style='width:50%'>"
 puts "        <tr>"
 $i = 0
-while $i < data[7].size    #this simply goes through the data array and outputs the headers
-    if ARGV[0] == '-ids' && $i == 1 
-        $i += 1
-    end
-    puts "            <th>" + data[5][$i] + "</th>"
-    $i += 1
-end
+headersOutput(data)
 puts "            <th>Est Score</th>"
 puts "        </tr>"
 
@@ -111,21 +138,7 @@ if ARGV[0] == '-names'
     puts "            <th></th>"
 end
 $i = 2
-while $i < scores[$i].size
-    $trueSize = scores.size
-    $sum = 0
-    $j = 0
-    while $j < scores.size
-        if scores[$j][$i].to_i == 0 #this is for finding true size when the score is = 0 
-            $trueSize -= 1          #this will only work if a student getting a complete 0 does not count towards average
-        end
-        $sum += scores[$j][$i].to_i
-        $j += 1
-    end
-    $avg = $sum.to_f / $trueSize #this will calculate the average of the class
-    puts "            <th>#{$avg.round(1)}</th>"
-    $i += 1
-end
+calculateArverage(scores)
 puts "            <th></th>"
 puts "        </tr>"
 
