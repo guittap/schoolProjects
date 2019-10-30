@@ -1,6 +1,16 @@
 #Wargen Guittap // CS 326
 require "csv"
 
+#show how proper command line should look
+if ARGV.size == 0
+    abort("proper command line arguement: ruby proj7.rb [-ids or -names] [csv file] > [html file]")
+end
+
+#checks if argv is invalid
+if ARGV.size != 2
+    abort("invalid command line arguement!")
+end
+
 #variables
 data = CSV.read(ARGV[1])
 projTitle = data[0][1]
