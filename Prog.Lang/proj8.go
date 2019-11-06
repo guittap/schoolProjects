@@ -1,3 +1,6 @@
+//Wargen Guittap
+//CS 457 Project #8
+
 package main
 	
 import (
@@ -83,6 +86,7 @@ func quickSort(list []int, lo int, hi int) {
 	}
 }
 
+//this function will get a given list and return ave, vari, stanDev
 func stats(list []int) (ave float64, vari float64, stanDev float64){
 	sum := 0
 	for i := 0; i < len(list); i++ {
