@@ -1,0 +1,17 @@
+#lang racket
+
+;; Project #11
+
+(define (iseven x)
+    (cond [(= (modulo x 2) 0) #t]
+        [else #f]
+    )
+)
+
+(newline)
+(display "Even Tests -> (iseven? atm) \n")
+(iseven? 10)
+(iseven? 21)
+(iseven? 50)
+(iseven? 97)
+(newline)
