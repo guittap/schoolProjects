@@ -1,0 +1,239 @@
+<!-- Wargen Guittap Project #5 CS 326 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Never Catch Me</title>
+
+    <!-- stylesheets -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-size: 1rem;
+        }
+
+        .centerText {
+            text-align: center;
+        }
+
+        .centerDiv {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bigText {
+            font-size: 1.5rem;
+        }
+
+        .paddingMenu {
+            padding-top: 1.5rem;
+        }
+        input[type="button"] {
+            padding: 0.25rem 0.5rem;
+            border: 0.0625rem solid gray;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            transition: 0.5s;
+        }
+        input[type="button"]:hover {
+            border-color: black;
+        } 
+
+        input[type="number"] {
+            padding: 0.25rem 0.5rem;
+            border: 0.0625rem solid gray;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            transition: 0.5s;
+        }
+
+        input[type="number"]:hover {
+            border-color: black;
+        } 
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script type = 'text/javascript'>
+        let mole;
+        let bang;
+        let hammer;
+        let gold;
+        let hits = 0;
+        let moleX = 0;
+        let moleY = 0;
+        let moleW = 100;
+        let moleH = 100;
+        let bangX = 0;
+        let bangY = 0;
+        let bangW = 100;
+        let bangH = 75;
+        let hammerW = 75;
+        let hammerH = 65;
+        let canvasW = window.innerWidth/1.5;
+        let canvasH = window.innerHeight/1.5;
+        let speed = 750;
+        let milliInitial = Date.now();
+        let milliCurrent = milliInitial;
+        let milliInterval = setInterval(timer, 1);
+        let isStart = 'false';
+        let wasClicked = 'false';
+        let isGold = 'false';
+
+        //function that will reset variables
+        function reset() {
+            hits = 0;
+            moleX = 0;
+            moleY = 0;
+            isGold = 'false';
+            wasClicked = 'false';
+            isStart = 'false';
+            document.getElementById('hitNumber').innerHTML = 'Hits: ' + hits;
+            document.getElementById('currPos').innerHTML = 'Current Position: X: ' + Math.round(moleX) + ' Y: ' + Math.round(moleY);
+        }
+
+        //initial setup
+        function setup() {
+            let cnv = createCanvas(canvasW, canvasH);
+            cnv.parent("gameDiv");
+            mole = loadImage('mole.png');
+            bang = loadImage('bang.png');
+            hammer = loadImage('hammer.png');
+            gold = loadImage('gold.png');
+            noCursor();
+        }
+        
+        //timer function for the jump
+        function timer() {
+            milliCurrent = Date.now();
+            if (milliCurrent - milliInitial >= speed && isStart == 'true') {
+                milliInitial = milliCurrent;
+                updateMole();
+                document.getElementById('currPos').innerHTML = 'Current Position: X: ' + Math.round(moleX) + ' Y: ' + Math.round(moleY);
+            }
+        }
+
+        //function that will loop every frame 
+        function draw() {
+            background('lightgray');
+            if (wasClicked == 'true') {
+                image(bang, bangX, bangY, bangW, bangH);
+            }
+            if (isGold == 'true') {
+                image(gold, moleX, moleY, moleW, moleH);
+            }
+            else {
+                image(mole, moleX, moleY, moleW, moleH);
+            }
+            image(hammer, mouseX-25, mouseY-25, hammerW, hammerH);
+        }
+
+        //function that will do stuff when mouse is pressed
+        function mousePressed() {
+            let distBetweenMouse = dist(mouseX, mouseY, moleX + (moleW / 2), moleY + (moleH / 2));
+            if (distBetweenMouse < moleW / 2) {
+                hitCount();
+                milliInitial = 0;
+                bangX = moleX;
+                bangY = moleY;
+                updateMole();
+                wasClicked = 'true';
+                milliInitial = milliCurrent;
+                document.getElementById('currPos').innerHTML = 'Current Position: X: ' + Math.round(moleX) + ' Y: ' + Math.round(moleY);
+            }
+        }
+    
+        function updateMole() {
+            moleX = random(0, canvasW-moleW);
+            moleY = random(0, canvasH-moleH);
+            wasClicked = 'false';
+            isGold = 'false';
+            let goldRandom = int(random(1, 5));
+            if (goldRandom == 3) {
+                isGold = 'true';
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(canvasW, canvasH);
+            let moleX = 0;
+            let moleY = 0;
+        }
+
+        function hitCount() {
+            hits += 1;
+            if (isGold == 'true') {
+                hits += 2;
+            }
+            document.getElementById('hitNumber').innerHTML = 'Hits: ' + hits;
+        }
+
+        function stopButton() {
+            reset();
+            isStart = 'false';
+        }
+
+        function startButton() {
+            speed = document.getElementById('speed').value;
+            isStart = 'false';
+            if (inputCleansing(speed)) {
+                reset();
+                isStart = 'true';
+            }
+        }
+
+        function inputCleansing(speed){
+            if (speed <= 10000 && speed >= 100) {
+                return true;
+            }
+            else {
+                alert("Error. The speed does not appear to be valid. Please try again.");
+            }
+            return false;
+        }
+    </script>
+</head>
+<body>
+    <div class = 'container'>
+        <div class = 'centerText row'>
+            <div class = 'col'>
+                <p class = 'bigText'>CS 326, Project #5 - Never Catch Me</p>
+                <p>Wargen Guittap</p>
+            </div>
+        </div>
+        <div id = 'gameDiv' class = 'centerDiv row'>
+        </div>
+        <div class = 'row paddingMenu'>
+            <div class = 'col-md-1'></div>
+            <div class = 'col-md-2 centerText'>
+                <input type="button" value="Start" id="Start" onclick="startButton();"/>
+            </div>
+            <div class = 'col-md-6 centerText'>
+                <p>Speed: <input type="number" value='750' id="speed"></p>
+            </div>
+            <div class = 'col-md-2 centerText'>
+                <input type="button" value="Stop" id="Stop" onclick="stopButton();"/>
+            </div>
+            <div class = 'col-md-1'></div>
+        </div>
+        <div class = 'row paddingMenu'>
+            <div class = 'col-md-1'></div>
+            <div class = 'col-md-2 centerText'>
+                <p id = 'hitNumber'>Hits: 0</p>
+            </div>
+            <div class = 'col-md-8 centerText'>
+                <p id = 'currPos'>Current Position: X: 0 Y: 0</p>
+            </div>
+            <div class = 'col-md-1'></div>
+        </div>
+    </div>
+</body>
+</html>
