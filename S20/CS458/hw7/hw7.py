@@ -1,16 +1,16 @@
 import re
 import random
 
-# reading file
+### reading file ###
 f = open('Pride&Prejudice.txt', "r")
 string = f.read().lower()
 f.close()
 
-# removing punctuation, numbers, or other special symbols
+### removing punctuation, numbers, or other special symbols ###
 PUNCT = re.compile('[.,?1234567890;\'\"“:”()—!-]')
 string = re.sub(PUNCT, " ", string)
 
-# making possible typo diction
+### making possible typo diction ###
 KEYS = list('qwerstyuiopasdfghjklzxcvbnm')
 keyboardArrangement = {
     'q': ['w', 's', 'a',],
@@ -41,7 +41,7 @@ keyboardArrangement = {
     'm': ['n', 'j', 'k',]
 }
 
-# creating noisy file with 10% character errors
+### creating noisy file with 10% character errors ###
 count = 0
 total = 0
 f = open('noisy.txt', "w")
@@ -62,6 +62,9 @@ for i in string:
 
 print (count/total)
 f.close()
+
+### BUILDING HMM ###
+
 
 ### EXTRA CODE ###
 
