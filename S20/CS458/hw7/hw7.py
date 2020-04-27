@@ -1,5 +1,7 @@
 import re
 import random
+from hmmlearn import hmm
+import numpy as np
 
 ### reading file ###
 f = open('Pride&Prejudice.txt', "r")
@@ -64,7 +66,8 @@ print (count/total)
 f.close()
 
 ### BUILDING HMM ###
-
+states = KEYS
+symbols = KEYS
 
 ### EXTRA CODE ###
 
