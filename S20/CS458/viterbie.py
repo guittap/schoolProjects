@@ -28,13 +28,14 @@ def forward(observations, states, initial, transitions, emissions):
         for y in states:
             print1 = "alpha 2 (state: " + y + ") = "
             print2 = "alpha 2 (state: " + y + ") = "
-            recursion = 0
+            recursion = []
             for z in states:
-                recursion += forward[x-1][z] * transitions[z][y] * emissions[y][observations[x]]
+                recursion.append(forward[x-1][z] * transitions[z][y] * emissions[y][observations[x]])
                 print2 += "(" + str(forward[x-1][z]) + " * " + str(transitions[z][y]) + " * " + str(emissions[y][observations[x]]) + ") + "
 
             print(print2[:-2])
-            forward[x][y] = recursion
+            print(recursion)
+            forward[x][y] = max(recursion)
 
         print(forward[x])
         print()
