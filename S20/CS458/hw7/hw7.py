@@ -57,9 +57,12 @@ def keysAndArrange():
     return KEYS, keyboardArrangement
 
 ### creating noisy file with 10% character errors ###
-def noisyFileCreator(string, keyboardArrangement):
+def noisyFileCreator(string, keyboardArrangement, KEYS):
     count = 0
     total = 0
+    cEmissions = [[0 for x in range(26)] for i in range(26)]
+    cInitial = [0 for i in range(26)]
+
     f = open('noisy.txt', "w")
     random.seed(20)
     for i in string:
@@ -67,17 +70,20 @@ def noisyFileCreator(string, keyboardArrangement):
         if i.isalpha():
             if r==1:
                 r = random.randint(0, 2)
+                cEmissions[KEYS.index(i)][KEYS.index(keyboardArrangement[i][r])] += 1
                 f.write(keyboardArrangement[i][r])
                 count +=1
             else: 
+                cEmissions[KEYS.index(i)][KEYS.index(i)] += 1
                 f.write(i)
             
             total +=1
         else:
             f.write(i)
 
-    print (count/total)
+    # print (count/total)
     f.close()
+    return np.array(cEmissions)
 
 ### splitting data ###
 def split_data(X, y):
@@ -86,35 +92,35 @@ def split_data(X, y):
 
     return X_train, X_test, y_train, y_test
 
-def vEmissions(KEYS, keyboardArrangement):
-    emissions = []
+### emissions ###
+def vEmissions(cEmissions):
+    emissions = [[0 for x in range(26)] for i in range(26)]
     for i in range(26):
-        emissions.append([])
-        for j in range(26):
-            emissions[i].append(0)
-            if KEYS[j] in keyboardArrangement[KEYS[i]]:
-                emissions[i][j] = (1/3)*(1/10)
+        if 0 in cEmissions[i]:
+            for x in range(26):
+                cEmissions[i][x] += 1
 
-            if KEYS[j] == KEYS[i]:
-                emissions[i][j] = 9/10
+        for j in range(26):
+            emissions[i][j] = cEmissions[i][j] / sum(cEmissions[i])
 
     return(np.array(emissions))
 
+### transitions
 def vTransitions(X_train, KEYS):
-    transitions = []
-    for i in range(26):
-        transitions.append([])
-        for j in range(26):
-            transitions[i].append(0)
+    cTransitions = [[0 for x in range(26)] for i in range(26)]
+    transitions = [[0 for x in range(26)] for i in range(26)]
 
     for i in X_train:
         for j in range(len(i)-1):
-            transitions[KEYS.index(i[j])][KEYS.index(i[j+1])] += 1
+            cTransitions[KEYS.index(i[j])][KEYS.index(i[j+1])] += 1
 
     for i in range(26):
-        total = sum(transitions[i])
+        if 0 in cTransitions[i]:
+            for x in range(26):
+                cTransitions[i][x] += 1
+
         for j in range(26):
-            transitions[i][j] /= total
+            transitions[i][j] = cTransitions[i][j] / sum(cTransitions[i])
 
     return(np.array(transitions))
 
@@ -122,25 +128,24 @@ def vTransitions(X_train, KEYS):
 ### Viterbie ###
 def viterbie(KEYS, model, y_test):
     f = open("result.txt", "w")
+    vResult = []
     for i in y_test:
-        try:
-            if i.isalpha():
-                test1 = [KEYS.index(i) for i in list(i)]
+        if i.isalpha():
+            test1 = [KEYS.index(i) for i in list(i)]
 
-                test1 = np.array([test1]).T
-                model1 = model.fit(test1)
-                logprob, result1 = model.decode(test1, algorithm="viterbi")
+            test1 = np.atleast_2d([test1]).T
+            logprob, result1 = model.decode(test1, algorithm="viterbi")
 
-                result1 = "".join(KEYS[j] for j in result1)
+            result1 = "".join(KEYS[j] for j in result1)
 
-                f.write(result1)
-            
-            else: 
-                f.write(i)
+            f.write(result1)
+            vResult.append(result1)
+        
+        else: 
+            f.write(i)
 
-        except:
-            print("did not work!")
     f.close()
+    return(vResult)
 
 def main():
     ## READ FILE ##
@@ -153,7 +158,7 @@ def main():
     KEYS, keyboardArrangement = keysAndArrange()
 
     ## NOISY FILE ##
-    noisyFileCreator(string, keyboardArrangement)
+    cEmissions = noisyFileCreator(string, keyboardArrangement, KEYS)
 
     ## SPLIT DATA ##
     clean = string.split()
@@ -165,12 +170,54 @@ def main():
     symbols = KEYS
     initial = np.array([1/26 for i in states])
     model = hmm.MultinomialHMM(n_components=len(KEYS))
-    model.startprob = initial
-    model.transmat = vTransitions(X_train, KEYS)
-    model.emissionprob = vEmissions(KEYS, keyboardArrangement)
+    model.startprob_ = initial
+    model.transmat_ = vTransitions(X_train, KEYS)
+    model.emissionprob_ = vEmissions(cEmissions)
 
     ## VITERBIE ##
-    viterbie(KEYS, model, y_test)
+    vResult = viterbie(KEYS, model, y_test)
+
+    ## TRUE NEGATIVE ##
+    TN = 0
+    for i in range(len(X_test)):
+        for j in range(len(X_test[i])):
+            if X_test[i][j] == vResult[i][j] and X_test[i][j] == y_test[i][j]:
+                TN+=1
+
+    print("TRUE NEGATIVE = " + str(TN))
+
+    ## FALSE POSITIVE ##
+    FP = 0
+    for i in range(len(X_test)):
+        for j in range(len(X_test[i])):
+            if X_test[i][j] != vResult[i][j] and X_test[i][j] == y_test[i][j]:
+                FP+=1
+
+    print("FALSE POSITIVE = " + str(FP))
+
+    ## TRUE POSITIVE ##
+    TP = 0
+    for i in range(len(X_test)):
+        for j in range(len(X_test[i])):
+            if X_test[i][j] == vResult[i][j] and X_test[i][j] != y_test[i][j]:
+                TP+=1
+
+    print("TRUE POSITIVE = " + str(TP))
+
+    ## FALSE NEGATIVE ##
+    FN = 0
+    for i in range(len(X_test)):
+        for j in range(len(X_test[i])):
+            if X_test[i][j] != vResult[i][j] and X_test[i][j] != y_test[i][j]:
+                FN+=1
+
+    print("FALSE NEGATIVE = " + str(FN))
+    print()
+    
+    ## PRECISION RECALL ##
+    print("PRECISION = "+ str(TP/ (TP + FN) ))
+    print("RECALL = "+ str(TP/ (TP + FP) ))
+
 
 if __name__ == '__main__':
     main()
