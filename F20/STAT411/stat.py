@@ -31,9 +31,9 @@ import math
 # )
 
 # # choose shit
-# print(
-#     math.comb(25,3)
-# )
+print(
+    math.comb(26,3)*math.comb(10,2)
+)
 
 # choose and permute shit
 # print (
